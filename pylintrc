@@ -1,2 +1,2 @@
 [MASTER]
-ignore-patterns=**/tests/**/*.py
+ignore-paths=.*tests/

@@ -17,4 +17,4 @@ def test_answer():
     test node
     """
     obj = Node(3)
-    assert func(obj, 3) == 5
+    assert func(obj, 3) == 6
