@@ -99,20 +99,22 @@ class StateExtractor:
         self.vehicles = {}
         self.size = size
         self.has_custom_fuel = False
+        self.board = []
 
     def convert_to_array(self):
         """
         Convert the str input into a 2-d array
         """
-        curr_board = [0]*self.size  # initiate the 2-d array
+        curr_board = [0] * self.size  # initiate the 2-d array
         curr = 0
         for i in range(self.size):
-            row = [0]*self.size
+            row = [0] * self.size
             for j in range(self.size):
                 row[j] = self.input[curr]
                 curr += 1
             curr_board[i] = row
 
+        self.board = curr_board
         return curr_board
 
     def collect_vehicles(self):
@@ -146,7 +148,17 @@ class StateExtractor:
         while fuel_idx < len(self.input):
             veh_name = self.input[fuel_idx]
             vehicle: Vehicle = vehicles[veh_name]
-            vehicle.fuel = self.input[fuel_idx + 1]
+            vehicle.fuel = int(self.input[fuel_idx + 1])
             fuel_idx += 3
 
         self.vehicles = vehicles
+        return list(vehicles.values())
+
+    def print_curr_layout(self):
+        """
+        print the current layout of the board
+        """
+        for i in range(self.size):
+            start = i * self.size
+            end = start + self.size
+            print(self.input[start:end])
