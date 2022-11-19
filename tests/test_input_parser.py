@@ -41,7 +41,7 @@ def test_collect_vehicles():
     FILE_PATH = "./tests/Resources/sample-input.txt"
     EXPECTED_VEHICLE = Vehicle("A", (2, 4), 2, MovingDirection.HORIZONTAL, fuel=100)
     INPUTS = InputParser.parse(FILE_PATH)
-    extractor = StateExtractor(INPUTS[3])
+    extractor = StateExtractor(INPUTS[0])
     extractor.collect_vehicles()
     print(extractor.vehicles["J"])
     for veh in extractor.vehicles.values():

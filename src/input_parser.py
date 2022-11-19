@@ -104,15 +104,14 @@ class StateExtractor:
         """
         Convert the str input into a 2-d array
         """
-        curr_board = [[0] * self.size] * self.size  # initiate the 2-d array
+        curr_board = [0]*self.size  # initiate the 2-d array
         curr = 0
         for i in range(self.size):
+            row = [0]*self.size
             for j in range(self.size):
-                curr_board[i][j] = self.input[curr]
+                row[j] = self.input[curr]
                 curr += 1
-
-        if len(self.input) - curr > 1:
-            self.has_custom_fuel = True
+            curr_board[i] = row
 
         return curr_board
 

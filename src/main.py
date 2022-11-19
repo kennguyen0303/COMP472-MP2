@@ -23,3 +23,4 @@ if __name__ == "__main__":
     extractor.collect_vehicles()
     print(extractor.vehicles["J"])
     print(extractor.vehicles["B"])
+    print(extractor.convert_to_array())
