@@ -101,6 +101,9 @@ class StateExtractor:
         self.has_custom_fuel = False
         self.board = []
 
+        # collect vehicles
+        self.collect_vehicles()
+
     def convert_to_array(self):
         """
         Convert the str input into a 2-d array
