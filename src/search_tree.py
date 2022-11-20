@@ -73,11 +73,12 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
     moving horizontally by a given distance. Return the new str representing the new state.
     If distance > 0: go to the right. Else, distance <0, move to the left
     """
+    is_go_left = distance < 0
     vehicle: Vehicle = extractor.vehicles[vehicle_name]
     new_move_str = list(extractor.input[:36])
     target_col = (
         vehicle.last_point_loc[1] + distance
-        if distance > 0
+        if not is_go_left
         else vehicle.last_point_loc[1] + distance - (vehicle.size - 1)
     )  # detect the target column
     cannot_move_rules = [
@@ -93,7 +94,6 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
             return ""  # not doing anything and stop here
 
     # if possible to move
-    is_go_left = True if distance < 0 else False
     for i in range(abs(distance)):
         curr_col_target = (
             target_col + i if is_go_left else target_col - i
