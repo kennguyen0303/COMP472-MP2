@@ -23,7 +23,7 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ""  # not doing anything and stop here
+            return ("","")  # not doing anything and stop here
 
     # if possible to move
     for i in range(distance):
@@ -34,7 +34,8 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
-    return "".join(new_move_str)
+    fuel_update = vehicle.name + str(vehicle.fuel - distance)
+    return ("".join(new_move_str), fuel_update)
 
 
 def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
@@ -54,7 +55,7 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ""  # not doing anything and stop here
+            return ("","")  # not doing anything and stop here
 
     # if possible to move
     for i in range(distance):
@@ -65,7 +66,8 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
-    return "".join(new_move_str)
+    fuel_update = vehicle.name + str(vehicle.fuel - distance)
+    return ("".join(new_move_str), fuel_update)
 
 
 def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int):
@@ -91,7 +93,7 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ""  # not doing anything and stop here
+            return ("","")  # not doing anything and stop here
 
     # if possible to move
     for i in range(abs(distance)):
@@ -108,4 +110,15 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
-    return "".join(new_move_str)
+    fuel_update = vehicle.name + str(vehicle.fuel - abs(distance))
+    return ("".join(new_move_str), fuel_update)
+
+
+class Node:
+    """
+    A node to store the current state
+    """
+
+    def __init__(self, state_str: str) -> None:
+        self.extractor = StateExtractor(state_str)
+        self.nexts = []  # list of next possible nodes
