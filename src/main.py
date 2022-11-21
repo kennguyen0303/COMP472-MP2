@@ -26,14 +26,11 @@ if __name__ == "__main__":
     # print(extractor.vehicles["B"])
     # print(extractor.convert_to_array())
 
-    INPUT = "BBIJ....IJCCG.IAAM.DDK.M.H.KL..HFFL."
+    INPUT = "..I.KLBBI.KLGAADD.GH....GH.JEEFF.J.. K99 H99 A99 L98 D98"
     extractor = StateExtractor(INPUT)
     # possible moves
     extractor.print_curr_layout()
-    moving_res = move_horizontal(extractor, "D", -1)
-    ext = StateExtractor(moving_res[0], moving_res[1])
-    ext.print_curr_layout()
-
-    print(ext.get_fuels())
-    ext.set_fuel_for_vehicles("B3 A23 C77")
-    print(ext.get_fuels())
+    new_move_res = move_horizontal(extractor, 'D', 1)
+    new_ext = StateExtractor(new_move_res[0],new_move_res[1])
+    new_ext.print_curr_layout()
+    print(new_ext.get_curr_layout_str())

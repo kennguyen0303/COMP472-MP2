@@ -1,4 +1,4 @@
-from src.search_tree import move_up, move_down, move_horizontal
+from src.search_tree import move_up, move_down, move_horizontal, remove_vehicle
 from src.input_parser import StateExtractor
 
 
@@ -53,3 +53,10 @@ def test_move_horizontal():
     )
     assert INPUT == move_d_right_by_1_state
     assert "D98" == move_d_right_by_1_fuel_update
+
+def test_remove_vehicle():
+    INPUT = "..I.KLBBI.KLGAA.DDGH....GH.JEEFF.J.."
+    EXPECTED_OUTPUT = "..I.KLBBI.KLGAA...GH....GH.JEEFF.J.."
+    ext = StateExtractor(INPUT)
+    output = remove_vehicle(ext, 'D')
+    assert EXPECTED_OUTPUT == output

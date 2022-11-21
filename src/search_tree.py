@@ -23,7 +23,7 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("","")  # not doing anything and stop here
+            return ("", "")  # not doing anything and stop here
 
     # if possible to move
     for i in range(distance):
@@ -55,7 +55,7 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("","")  # not doing anything and stop here
+            return ("", "")  # not doing anything and stop here
 
     # if possible to move
     for i in range(distance):
@@ -78,6 +78,7 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
     is_go_left = distance < 0
     vehicle: Vehicle = extractor.vehicles[vehicle_name]
     new_move_str = list(extractor.input[:36])
+    fuel_update = ""
     target_col = (
         vehicle.last_point_loc[1] + distance
         if not is_go_left
@@ -93,7 +94,7 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("","")  # not doing anything and stop here
+            return ("", "")  # not doing anything and stop here
 
     # if possible to move
     for i in range(abs(distance)):
@@ -112,6 +113,29 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
 
     fuel_update = vehicle.name + str(vehicle.fuel - abs(distance))
     return ("".join(new_move_str), fuel_update)
+
+
+def remove_vehicle(extractor: StateExtractor, vehicle_name: str):
+    """
+    Remove a horizontal vehicle only if it's at the exit. Return the new string representation
+    """
+    vehicle: Vehicle = extractor.vehicles[vehicle_name]
+    if (
+        vehicle_name == "A"
+        or vehicle.mov_dir == MovingDirection.VERTICAL
+        or not vehicle.is_at_exit()
+    ):
+        raise ValueError("Invalid vehicle to be removed..")
+
+    curr_board = list(extractor.input[:36])
+
+    for i in range(vehicle.size):
+        source_loc = (
+            vehicle.last_point_loc[1] - i + extractor.size * vehicle.last_point_loc[0]
+        )
+        curr_board[source_loc] = "."
+
+    return "".join(curr_board)
 
 
 class Node:

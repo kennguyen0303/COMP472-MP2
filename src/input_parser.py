@@ -2,7 +2,6 @@
 Class InputParser for parsing input file
 """
 from enum import Enum
-from math import pow
 
 
 class InputParser:
@@ -87,6 +86,14 @@ class Vehicle:
             + str(self.fuel)
             + ", last_position: "
             + str(self.last_point_loc)
+        )
+
+    def is_at_exit(self):
+        """
+        Return True if the vehicle is at the exit and can be taken out. False otherwise
+        """
+        return (
+            self.last_point_loc == (2, 5) and self.mov_dir == MovingDirection.HORIZONTAL
         )
 
 
