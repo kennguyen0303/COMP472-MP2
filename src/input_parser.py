@@ -88,7 +88,7 @@ class Vehicle:
             + str(self.last_point_loc)
         )
 
-    def is_at_exit(self):
+    def can_be_removed(self):
         """
         Return True if the vehicle is at the exit and can be taken out. False otherwise
         """
@@ -167,6 +167,19 @@ class StateExtractor:
             end = start + self.size
             print(self.input[start:end])
 
+    def get_curr_layout_shape(self):
+        """
+        print the current layout of the board
+        """
+        txt_to_print = []
+        for i in range(self.size):
+            start = i * self.size
+            end = start + self.size
+            txt_to_print.append(self.input[start:end])
+            txt_to_print.append("\n")
+
+        return "".join(txt_to_print)
+
     def set_fuel_for_vehicles(self, fuel_info: str):
         """
         Method for setting the fuel for all vehicles in the current state
@@ -180,7 +193,7 @@ class StateExtractor:
         slow, fast = 0, 1
         while fast < len(fuel_info):
             veh_name = fuel_info[slow]
-            vehicle: Vehicle = self.vehicles[veh_name]
+            vehicle: Vehicle = self.vehicles.get(veh_name)
 
             # collect fuel for this vehicle
             tmp_fuel = [""]
@@ -191,7 +204,8 @@ class StateExtractor:
                     break
 
             new_fuel = "".join(tmp_fuel)
-            vehicle.fuel = int(new_fuel)
+            if not vehicle is None:
+                vehicle.fuel = int(new_fuel)
 
             # update pointers
             slow = fast + 1  # next vehicle name if exists
@@ -215,3 +229,11 @@ class StateExtractor:
         """
         end = pow(self.size, 2)
         return self.input[:end]
+
+    def set_new_input(self, state_input: str, fuel_update=""):
+        """
+        Update new state for this extractor
+        """
+        self.input = state_input  # update input
+        self.collect_vehicles()  # update vehicles
+        self.set_fuel_for_vehicles(fuel_update)
