@@ -88,18 +88,34 @@ class Vehicle:
             + str(self.last_point_loc)
         )
 
+    def can_be_removed(self):
+        """
+        Return True if the vehicle is at the exit and can be taken out. False otherwise
+        """
+        return (
+            self.last_point_loc == (2, 5) and self.mov_dir == MovingDirection.HORIZONTAL
+        )
+
 
 class StateExtractor:
     """
     Class for extracting the information from a string
     """
 
-    def __init__(self, str_input: str, size=6) -> None:
+    def __init__(self, str_input: str, fuel_update="", size=6) -> None:
         self.input = str_input
         self.vehicles = {}
         self.size = size
         self.has_custom_fuel = False
         self.board = []
+
+        # collect vehicles
+        self.collect_vehicles()
+        if len(str_input) > 37:
+            self.set_fuel_for_vehicles(self.input[37:])
+
+        if len(fuel_update) > 2:
+            self.set_fuel_for_vehicles(fuel_update)
 
     def convert_to_array(self):
         """
@@ -122,12 +138,7 @@ class StateExtractor:
         Collect the vehicles info
         """
         vehicles = {}
-        fuel_idx = float("inf")
-        for idx, char in enumerate(self.input):
-            if char == " ":
-                fuel_idx = idx + 1
-                break
-
+        for idx, char in enumerate(self.input[:36]):
             if char == ".":
                 continue  # no need
 
@@ -144,13 +155,6 @@ class StateExtractor:
                 vehicle: Vehicle = vehicles[char]
                 vehicle.add_new_part(curr_loc)
 
-        # if has custom fuel
-        while fuel_idx < len(self.input):
-            veh_name = self.input[fuel_idx]
-            vehicle: Vehicle = vehicles[veh_name]
-            vehicle.fuel = int(self.input[fuel_idx + 1])
-            fuel_idx += 3
-
         self.vehicles = vehicles
         return list(vehicles.values())
 
@@ -162,3 +166,74 @@ class StateExtractor:
             start = i * self.size
             end = start + self.size
             print(self.input[start:end])
+
+    def get_curr_layout_shape(self):
+        """
+        print the current layout of the board
+        """
+        txt_to_print = []
+        for i in range(self.size):
+            start = i * self.size
+            end = start + self.size
+            txt_to_print.append(self.input[start:end])
+            txt_to_print.append("\n")
+
+        return "".join(txt_to_print)
+
+    def set_fuel_for_vehicles(self, fuel_info: str):
+        """
+        Method for setting the fuel for all vehicles in the current state
+
+        fuel_info: the string represent the fuel information for all vehicles
+        """
+        if len(self.vehicles) == 0 or len(fuel_info) < 2:
+            return
+
+        # if there is some vehicles and some fuel info
+        slow, fast = 0, 1
+        while fast < len(fuel_info):
+            veh_name = fuel_info[slow]
+            vehicle: Vehicle = self.vehicles.get(veh_name)
+
+            # collect fuel for this vehicle
+            tmp_fuel = [""]
+            while fuel_info[fast] != " ":
+                tmp_fuel.append(fuel_info[fast])
+                fast += 1
+                if fast >= len(fuel_info):
+                    break
+
+            new_fuel = "".join(tmp_fuel)
+            if not vehicle is None:
+                vehicle.fuel = int(new_fuel)
+
+            # update pointers
+            slow = fast + 1  # next vehicle name if exists
+            fast = slow + 1
+
+    def get_fuels(self):
+        """
+        Return the string representing the fuel
+        """
+        to_print = []
+        for veh in self.vehicles.values():
+            to_print.append(veh.name)
+            to_print.append(str(veh.fuel))
+            to_print.append(" ")
+
+        return "".join(to_print)
+
+    def get_curr_layout_str(self):
+        """
+        Return current layout as a string
+        """
+        end = pow(self.size, 2)
+        return self.input[:end]
+
+    def set_new_input(self, state_input: str, fuel_update=""):
+        """
+        Update new state for this extractor
+        """
+        self.input = state_input  # update input
+        self.collect_vehicles()  # update vehicles
+        self.set_fuel_for_vehicles(fuel_update)

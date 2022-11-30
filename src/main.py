@@ -1,37 +1,31 @@
 """
 Something
 """
-from input_parser import InputParser, StateExtractor
-from search_tree import move_up, move_down
-
-
-class Node:
-    """
-    asd
-    """
-
-    def __init__(self, val: int) -> None:
-        """
-        something
-        """
-        self.val = val
-
+from datetime import datetime
+from input_parser import InputParser
+from search_algos import UCS
+from reporter import OutputReporter
 
 if __name__ == "__main__":
-    # FILE_PATH = "./tests/Resources/sample-input.txt"
-    # INPUTS = InputParser.parse(FILE_PATH)
-    # extractor = StateExtractor(INPUTS[3])
-    # extractor.collect_vehicles()
-    # print(extractor.vehicles["J"])
-    # print(extractor.vehicles["B"])
-    # print(extractor.convert_to_array())
-
-    INPUT = "BBIJ....IJCC..IAAMGDDK.MGH.KL.GHFFL."
-    extractor = StateExtractor(INPUT)
-    extractor.collect_vehicles()
-    vehicle_M = extractor.vehicles["M"]
-    new_state = move_down(extractor, vehicle_M, 1)
-    extractor.print_curr_layout()
-    extractor2 = StateExtractor(new_state)
-    print("---")
-    extractor2.print_curr_layout()
+    FILE_PATH = (
+        "/home/n_thekie/Desktop/school/comp 472/COMP472-MP2/Sample/sample-input.txt"
+    )
+    INPUTS = InputParser.parse(FILE_PATH)
+    reporter = OutputReporter(
+        root_dir="/home/n_thekie/Desktop/school/comp 472/COMP472-MP2/outputs/"
+    )
+    sol_count = 0
+    for idx, input_str in enumerate(INPUTS):
+        if idx == 2:
+            break
+        print("\n-------- NEW INPUT--------\n")
+        curr_time = datetime.now()
+        usc = UCS()
+        usc.search_ucs(input_str)
+        run_time = (datetime.now() - curr_time).total_seconds()
+        sol_count += 1
+        print(usc.is_final_state_reached)
+        print(usc.state_count)
+        print("Take: ", run_time)
+        filename = "ucs-sol-" + str(sol_count) + ".txt"
+        reporter.export_solution_file(filename, usc, run_time)
