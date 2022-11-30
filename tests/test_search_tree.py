@@ -11,7 +11,7 @@ def test_move_up():
     invalid_new_state = move_up(extractor, "G", 4)
     assert EXPECTED_OUTPUT == valid_new_state[0]
     assert EXPECTED_FUEL_UPDATE == valid_new_state[1]
-    assert ("","") == invalid_new_state
+    assert ("", "", "") == invalid_new_state
 
 
 def test_move_down():
@@ -26,7 +26,7 @@ def test_move_down():
 
 def test_move_horizontal():
     INPUT = "BBIJ..G.IJCCG.IAAM.DDK.M.H.KL..HFFL."
-    EXPECTED_INVALID_OUTPUT = ("","")
+    EXPECTED_INVALID_OUTPUT = ("", "", "")
     EXPECTED_VALID_OUTPUT = "BBIJ..G.IJCCG.IAAMDD.K.M.H.KL..HFFL."
     extractor = StateExtractor(INPUT)
     # G cannot move horizontally
@@ -39,24 +39,31 @@ def test_move_horizontal():
         assert EXPECTED_INVALID_OUTPUT == state
 
     # possible moves
-    move_d_left_by_1_state, move_d_left_by_1_fuel_update = move_horizontal(
-        extractor, "D", -1
-    )
+    (
+        move_d_left_by_1_state,
+        move_d_left_by_1_fuel_update,
+        move_d_left_by_1_msg,
+    ) = move_horizontal(extractor, "D", -1)
     assert EXPECTED_VALID_OUTPUT == move_d_left_by_1_state
     assert "D99" == move_d_left_by_1_fuel_update
+    assert "D left 1" == move_d_left_by_1_msg
 
     # move back to right by 1
     new_extractor = StateExtractor(move_d_left_by_1_state, move_d_left_by_1_fuel_update)
     print(new_extractor.get_fuels())
-    move_d_right_by_1_state, move_d_right_by_1_fuel_update = move_horizontal(
-        new_extractor, "D", 1
-    )
+    (
+        move_d_right_by_1_state,
+        move_d_right_by_1_fuel_update,
+        move_d_right_by_1_msg,
+    ) = move_horizontal(new_extractor, "D", 1)
     assert INPUT == move_d_right_by_1_state
     assert "D98" == move_d_right_by_1_fuel_update
+    assert "D right 1" == move_d_right_by_1_msg
+
 
 def test_remove_vehicle():
     INPUT = "..I.KLBBI.KLGAA.DDGH....GH.JEEFF.J.."
     EXPECTED_OUTPUT = "..I.KLBBI.KLGAA...GH....GH.JEEFF.J.."
     ext = StateExtractor(INPUT)
-    output = remove_vehicle(ext, 'D')
+    output = remove_vehicle(ext, "D")
     assert EXPECTED_OUTPUT == output

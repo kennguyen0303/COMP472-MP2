@@ -2,7 +2,6 @@
 Sample test
 """
 
-import pytest
 from src.input_parser import InputParser, StateExtractor, Vehicle, MovingDirection
 
 

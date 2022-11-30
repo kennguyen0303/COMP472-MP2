@@ -3,6 +3,8 @@ Module for handling the search tree
 """
 from input_parser import MovingDirection, StateExtractor, Vehicle
 
+DEFAULT_MESSAGE = ""
+
 
 def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
     """
@@ -19,11 +21,14 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
         vehicle.fuel < distance,
         vehicle.mov_dir == MovingDirection.HORIZONTAL,
         target_row < 0,
-        curr_board_str[target_row * extractor.size + vehicle.last_point_loc[1]] != ".",
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("", "")  # not doing anything and stop here
+            return ("", "", DEFAULT_MESSAGE)  # not doing anything and stop here
+
+    if curr_board_str[target_row * extractor.size + vehicle.last_point_loc[1]] != ".":
+        # not available
+        return ("", "", DEFAULT_MESSAGE)
 
     # if possible to move
     for i in range(distance):
@@ -31,11 +36,14 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
         curr_row_src = vehicle.last_point_loc[0] - i
         target_loc = curr_row_target * extractor.size + vehicle.last_point_loc[1]
         source_loc = curr_row_src * extractor.size + vehicle.last_point_loc[1]
+        if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
+            return ("", "", DEFAULT_MESSAGE)
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
     fuel_update = vehicle.name + str(vehicle.fuel - distance)
-    return ("".join(new_move_str), fuel_update)
+    message = vehicle_name + " up " + str(distance)
+    return ("".join(new_move_str), fuel_update, message)
 
 
 def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
@@ -50,12 +58,15 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
         vehicle.fuel < distance,
         vehicle.mov_dir == MovingDirection.HORIZONTAL,
         target_row < 0,
-        target_row > extractor.size,
-        extractor.input[target_row * extractor.size + vehicle.last_point_loc[1]] != ".",
+        target_row >= extractor.size,
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("", "")  # not doing anything and stop here
+            return ("", "", DEFAULT_MESSAGE)  # not doing anything and stop here
+
+    if extractor.input[target_row * extractor.size + vehicle.last_point_loc[1]] != ".":
+        # not available
+        return ("", "", DEFAULT_MESSAGE)
 
     # if possible to move
     for i in range(distance):
@@ -63,11 +74,14 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
         curr_row_src = vehicle.last_point_loc[0] + i - (vehicle.size - 1)  #
         target_loc = curr_row_target * extractor.size + vehicle.last_point_loc[1]
         source_loc = curr_row_src * extractor.size + vehicle.last_point_loc[1]
+        if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
+            return ("", "", DEFAULT_MESSAGE)
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
     fuel_update = vehicle.name + str(vehicle.fuel - distance)
-    return ("".join(new_move_str), fuel_update)
+    message = vehicle_name + " down " + str(distance)
+    return ("".join(new_move_str), fuel_update, message)
 
 
 def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int):
@@ -90,11 +104,14 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
         vehicle.mov_dir == MovingDirection.VERTICAL,
         target_col < 0,
         target_col >= extractor.size,
-        extractor.input[target_col + extractor.size * vehicle.last_point_loc[0]] != ".",
     ]
     for cond in cannot_move_rules:
         if cond:
-            return ("", "")  # not doing anything and stop here
+            return ("", "", DEFAULT_MESSAGE)  # not doing anything and stop here
+
+    if extractor.input[target_col + extractor.size * vehicle.last_point_loc[0]] != ".":
+        # not available
+        return ("", "", DEFAULT_MESSAGE)
 
     # if possible to move
     for i in range(abs(distance)):
@@ -108,11 +125,18 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
         )
         target_loc = curr_col_target + extractor.size * vehicle.last_point_loc[0]
         source_loc = curr_col_src + extractor.size * vehicle.last_point_loc[0]
+        if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
+            return ("", "", DEFAULT_MESSAGE)
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 
     fuel_update = vehicle.name + str(vehicle.fuel - abs(distance))
-    return ("".join(new_move_str), fuel_update)
+    message = (
+        vehicle_name + " left " + str(abs(distance))
+        if is_go_left
+        else vehicle_name + " right " + str(distance)
+    )
+    return ("".join(new_move_str), fuel_update, message)
 
 
 def remove_vehicle(extractor: StateExtractor, vehicle_name: str):
@@ -123,7 +147,7 @@ def remove_vehicle(extractor: StateExtractor, vehicle_name: str):
     if (
         vehicle_name == "A"
         or vehicle.mov_dir == MovingDirection.VERTICAL
-        or not vehicle.is_at_exit()
+        or not vehicle.can_be_removed()
     ):
         raise ValueError("Invalid vehicle to be removed..")
 
@@ -136,13 +160,3 @@ def remove_vehicle(extractor: StateExtractor, vehicle_name: str):
         curr_board[source_loc] = "."
 
     return "".join(curr_board)
-
-
-class Node:
-    """
-    A node to store the current state
-    """
-
-    def __init__(self, state_str: str) -> None:
-        self.extractor = StateExtractor(state_str)
-        self.nexts = []  # list of next possible nodes
