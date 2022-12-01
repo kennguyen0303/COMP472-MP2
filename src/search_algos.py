@@ -21,7 +21,6 @@ class UCS:
         heapq.heapify(self.open_list)
         self.is_final_state_reached = False
         self.final_state = StateExtractor("")
-        self.state_count = 0
         self.ori_input = ""
 
     def search_ucs(self, input_str: str):
@@ -31,7 +30,7 @@ class UCS:
         if input_str.strip() == "":  # invalid input
             return
 
-        fuel_update = ""
+        fuel_update = " "
         parent_state = ""
         curr_cost = 0
         self.ori_input = input_str
@@ -59,16 +58,13 @@ class UCS:
             if self.closed_list.get(input_str) is not None:  # a visited state
                 continue
 
-            if input_str == "..IJ.LBBIJ.LGAA...GHDDK.GHEEK.FF..K.":
-                print("Here")
-
-            self.state_count += 1
             extractor = StateExtractor(input_str, fuel_update)
 
             # Step 0: Add curr_state to the closed_list
             self.closed_list[input_str] = (
                 parent_state,
                 next_state[4],
+                fuel_update[len(fuel_update) - 3 : len(fuel_update)][1:],
             )  # store parent state and move_details
 
             # step 1: Check for vehicle at the exit
@@ -80,8 +76,9 @@ class UCS:
                     self.is_final_state_reached = True
                     self.final_state = extractor  # store for key search in closed_list
                     extractor.print_curr_layout()
+                    print(len(self.closed_list))
                     print("\n-------\n")
-                    print(extractor.get_fuels())
+                    print(extractor.get_fuels(only_consumed=True))
                     return
 
                 # remove the vehicle at exit
@@ -119,7 +116,7 @@ class UCS:
                                     (
                                         curr_cost + 1,
                                         new_move[0],
-                                        new_move[1] + " " + fuel_update,
+                                        fuel_update + " " + new_move[1],
                                         input_str,
                                         new_move[2],
                                     ),

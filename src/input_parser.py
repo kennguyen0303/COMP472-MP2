@@ -211,12 +211,15 @@ class StateExtractor:
             slow = fast + 1  # next vehicle name if exists
             fast = slow + 1
 
-    def get_fuels(self):
+    def get_fuels(self, only_consumed=False):
         """
         Return the string representing the fuel
         """
         to_print = []
         for veh in self.vehicles.values():
+            if only_consumed and veh.fuel == 100:
+                continue
+
             to_print.append(veh.name)
             to_print.append(str(veh.fuel))
             to_print.append(" ")
