@@ -36,6 +36,8 @@ def move_up(extractor: StateExtractor, vehicle_name: str, distance: int):
         curr_row_src = vehicle.last_point_loc[0] - i
         target_loc = curr_row_target * extractor.size + vehicle.last_point_loc[1]
         source_loc = curr_row_src * extractor.size + vehicle.last_point_loc[1]
+        if new_move_str[target_loc] == "." and new_move_str[source_loc] == ".":
+            continue  # no need to switch
         if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
             return ("", "", DEFAULT_MESSAGE)
         new_move_str[target_loc] = vehicle.name
@@ -74,6 +76,8 @@ def move_down(extractor: StateExtractor, vehicle_name: str, distance: int):
         curr_row_src = vehicle.last_point_loc[0] + i - (vehicle.size - 1)  #
         target_loc = curr_row_target * extractor.size + vehicle.last_point_loc[1]
         source_loc = curr_row_src * extractor.size + vehicle.last_point_loc[1]
+        if new_move_str[target_loc] == "." and new_move_str[source_loc] == ".":
+            continue  # no need to switch
         if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
             return ("", "", DEFAULT_MESSAGE)
         new_move_str[target_loc] = vehicle.name
@@ -125,8 +129,10 @@ def move_horizontal(extractor: StateExtractor, vehicle_name: str, distance: int)
         )
         target_loc = curr_col_target + extractor.size * vehicle.last_point_loc[0]
         source_loc = curr_col_src + extractor.size * vehicle.last_point_loc[0]
+        if new_move_str[target_loc] == "." and new_move_str[source_loc] == ".":
+            continue  # no need to switch
         if new_move_str[target_loc] != "." or new_move_str[source_loc] != vehicle.name:
-            return ("", "", DEFAULT_MESSAGE)
+            return ("", "", DEFAULT_MESSAGE)  # invalid case detected
         new_move_str[target_loc] = vehicle.name
         new_move_str[source_loc] = "."
 

@@ -78,9 +78,9 @@ class OutputReporter:
 
         while True:
             solution_path.append(curr_step)
-            curr_step, message_details = search_algo.closed_list[
-                curr_step
-            ]  # receive the parent, note: detail of the child and curr_step is now the parent
+            curr_step, message_details = search_algo.closed_list.get(
+                curr_step, ("", "")
+            )  # receive the parent, note: detail of the child and curr_step is now the parent
             if curr_step == "":
                 solution_path.pop()
                 break

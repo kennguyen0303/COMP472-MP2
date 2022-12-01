@@ -51,12 +51,16 @@ class UCS:
                 next_state[1],
                 next_state[3],
             )
+
             fuel_update = (
                 next_state[2] if len(next_state[1]) < 38 else next_state[1][37:]
             )  # only the first node
 
             if self.closed_list.get(input_str) is not None:  # a visited state
                 continue
+
+            if input_str == "..IJ.LBBIJ.LGAA...GHDDK.GHEEK.FF..K.":
+                print("Here")
 
             self.state_count += 1
             extractor = StateExtractor(input_str, fuel_update)
