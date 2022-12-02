@@ -2,6 +2,7 @@
 Module for search algorithms
 """
 import heapq
+from constants import SIZE
 from input_parser import StateExtractor
 from search_tree import move_down, move_up, move_horizontal, remove_vehicle
 
@@ -37,9 +38,17 @@ class GenericSearch:
         parent_state = ""
         curr_cost = 0
         self.ori_input = input_str
+        init_h = self.function_h(input_str[:36])
         # add root
         self.open_list.append(
-            (curr_cost, input_str, fuel_update, parent_state, "", (0, 0))
+            (
+                curr_cost + init_h,
+                input_str,
+                fuel_update,
+                parent_state,
+                "",
+                (curr_cost, init_h),
+            )
         )
 
         # loop
@@ -51,7 +60,7 @@ class GenericSearch:
 
             next_state = heapq.heappop(self.open_list)
             curr_cost, input_str, parent_state = (
-                next_state[0],
+                next_state[5][0],
                 next_state[1],
                 next_state[3],
             )
@@ -73,7 +82,7 @@ class GenericSearch:
             )  # store <parent_state, move_details, new_fuel_for_vehicle_moved
             # search path update
             self.search_path.append(next_state)
-            
+
             # step 1: Check for vehicle at the exit
             for vehicle in extractor.vehicles.values():
                 if not vehicle.can_be_removed():
@@ -159,15 +168,13 @@ class UCS(GenericSearch):
         return 0
 
 
-class BFS(GenericSearch):
+class GBFS(GenericSearch):
     """'
     Greedy best first search algo
     """
 
-    def __init__(self) -> None:
-        super().__init__(
-            function_g=self.calculate_g, function_h=self.calculate_heuristic
-        )
+    def __init__(self, heuristic_function) -> None:
+        super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
 
     def calculate_g(self, curr_cost: int):
         """
@@ -175,8 +182,45 @@ class BFS(GenericSearch):
         """
         return 0
 
-    def calculate_heuristic(self, state_str: str, heuristic_code=0):
-        """'
-        Calculate heruristic based on a string
+
+class AlgoA(GenericSearch):
+    """'
+    Algorithm A
+    """
+
+    def __init__(self, heuristic_function) -> None:
+        super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
+
+    def calculate_g(self, curr_cost: int):
         """
-        return
+        find the cost based on number of parents
+        """
+        return curr_cost + 1
+
+
+def calculate_heuristic_1(state_str: str):
+    """'
+    Calculate heruristic based on a string
+
+    Heuristic 1: Number of blocking vehicles
+    """
+    # first, locate A on row 3
+    row_loc = 2
+    slow = SIZE * row_loc
+    fast = slow
+    end = slow + (SIZE - 1)
+    is_ambulance_found = False
+    heuristic = 0
+    while fast <= end:
+        if state_str[fast] == "A":
+            # goal: slow is the right-most cell of A
+            if not is_ambulance_found:
+                is_ambulance_found = True
+                slow = fast
+        elif is_ambulance_found:
+            if state_str[fast] != "." and state_str[fast] != state_str[slow]:
+                slow = fast
+                heuristic += 1
+
+        fast += 1
+    return heuristic
