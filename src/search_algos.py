@@ -6,12 +6,15 @@ from input_parser import StateExtractor
 from search_tree import move_down, move_up, move_horizontal, remove_vehicle
 
 
-class UCS:
+class GenericSearch:
     """
     Class for universal cost search
     """
 
-    def __init__(self) -> None:
+    def __init__(self, function_g, function_h) -> None:
+        self.function_g = function_g
+        self.function_h = function_h
+        self.search_path = []
         self.closed_list = (
             {}
         )  # a normal list, can be a map for fast check, only need the key = "state_string"
@@ -23,7 +26,7 @@ class UCS:
         self.final_state = StateExtractor("")
         self.ori_input = ""
 
-    def search_ucs(self, input_str: str):
+    def search(self, input_str: str):
         """
         Universal Cost Search
         """
@@ -35,7 +38,9 @@ class UCS:
         curr_cost = 0
         self.ori_input = input_str
         # add root
-        self.open_list.append((curr_cost, input_str, fuel_update, parent_state, ""))
+        self.open_list.append(
+            (curr_cost, input_str, fuel_update, parent_state, "", (0, 0))
+        )
 
         # loop
         while len(self.open_list) > 0:
@@ -65,8 +70,10 @@ class UCS:
                 parent_state,
                 next_state[4],
                 fuel_update[len(fuel_update) - 3 : len(fuel_update)][1:],
-            )  # store parent state and move_details
-
+            )  # store <parent_state, move_details, new_fuel_for_vehicle_moved
+            # search path update
+            self.search_path.append(next_state)
+            
             # step 1: Check for vehicle at the exit
             for vehicle in extractor.vehicles.values():
                 if not vehicle.can_be_removed():
@@ -111,15 +118,65 @@ class UCS:
                                 self.closed_list.get(new_move[0]) is None
                             ):  # not in closed list
                                 no_more_move = False
+                                cost_g = self.function_g(curr_cost)
+                                cost_h = self.function_h(new_move[0])
+                                # curr_cost +1
                                 heapq.heappush(
                                     self.open_list,
                                     (
-                                        curr_cost + 1,
+                                        cost_g + cost_h,
                                         new_move[0],
                                         fuel_update + " " + new_move[1],
                                         input_str,
                                         new_move[2],
+                                        (cost_g, cost_h),
                                     ),
                                 )  # new_move <state_string, fuel_update for this move, message for search path>
 
                     distance += 1
+
+
+class UCS(GenericSearch):
+    """'
+    UCS algo
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            function_g=self.calculate_g, function_h=self.calculate_heuristic
+        )
+
+    def calculate_g(self, curr_cost: int):
+        """
+        find the cost based on number of parents
+        """
+        return curr_cost + 1
+
+    def calculate_heuristic(self, state_str: str):
+        """'
+        Calculate heruristic based on a string
+        """
+        return 0
+
+
+class BFS(GenericSearch):
+    """'
+    Greedy best first search algo
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            function_g=self.calculate_g, function_h=self.calculate_heuristic
+        )
+
+    def calculate_g(self, curr_cost: int):
+        """
+        find the cost based on number of parents
+        """
+        return 0
+
+    def calculate_heuristic(self, state_str: str, heuristic_code=0):
+        """'
+        Calculate heruristic based on a string
+        """
+        return

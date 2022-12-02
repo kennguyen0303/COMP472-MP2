@@ -81,11 +81,17 @@ class OutputReporter:
         fuels = []
         curr_step = search_algo.final_state.get_curr_layout_str()
 
-        while True:
+        while curr_step != "":
             solution_path.append(curr_step)
-            curr_step, message_details, fuel = search_algo.closed_list.get(
-                curr_step, ("", "")
+            curr_state = search_algo.closed_list.get(
+                curr_step, ("", "", "")
             )  # receive the parent, note: detail of the child and curr_step is now the parent
+            curr_step, message_details, fuel = (
+                curr_state[0],
+                curr_state[1],
+                curr_state[2],
+            )
+
             if curr_step == "":
                 solution_path.pop()
                 break
@@ -103,5 +109,40 @@ class OutputReporter:
 
     def export_search_path_file(self, file_name: str, search_algo: UCS):
         """
+        Export search path
+        """
+        search_path_df = self.get_search_path(search_algo)
+        txt_to_print = []
+        txt_to_print.append(
+            search_path_df.to_string(header=False, index=False, justify="start")
+        )
+        with open(
+            self.root_dir + file_name, mode="w", encoding="utf-8"
+        ) as file_handler:
+            file_handler.writelines(txt_to_print)
+
+    def get_search_path(self, search_algo: UCS):
+        """
         export the search path
         """
+        search_strs = []
+        h_vals = []
+        g_vals = []
+        f_vals = []
+        fuel_states = []
+        for state in search_algo.search_path:
+            h_vals.append(state[5][1])
+            g_vals.append(state[5][0])
+            f_vals.append(state[0])
+            search_strs.append(state[1])
+            fuel_states.append(state[2])
+
+        return DataFrame(
+            data={
+                "f_val": f_vals,
+                "g_val": g_vals,
+                "h_val": h_vals,
+                "state": search_strs,
+                "fuels": fuel_states,
+            }
+        )
