@@ -7,7 +7,7 @@ from search_algos import GBFS, AlgoA, UCS, calculate_heuristic_1
 from reporter import OutputReporter
 
 
-def run_ucs(inputs: list, reporter: OutputReporter):
+def run_ucs(inputs: list, output_reporter: OutputReporter):
     """
     Function for running UCS in main with some format
     """
@@ -23,11 +23,12 @@ def run_ucs(inputs: list, reporter: OutputReporter):
         sol_count = idx + 1
         file_solution_name = "ucs-sol-" + str(sol_count) + ".txt"
         file_search_name = "ucs-search-" + str(sol_count) + ".txt"
-        reporter.export_solution_file(file_solution_name, ucs, run_time)
-        reporter.export_search_path_file(file_search_name, ucs)
+        if output_reporter is not None:
+            output_reporter.export_solution_file(file_solution_name, ucs, run_time)
+            output_reporter.export_search_path_file(file_search_name, ucs)
 
 
-def run_algorithm_a(inputs: list, reporter: OutputReporter):
+def run_algorithm_a(inputs: list, output_reporter: OutputReporter):
     """
     Function for Algorithm A in main with some format
     """
@@ -43,11 +44,12 @@ def run_algorithm_a(inputs: list, reporter: OutputReporter):
         sol_count = idx + 1
         file_solution_name = "a-h1-sol-" + str(sol_count) + ".txt"
         file_search_name = "a-h1-search-" + str(sol_count) + ".txt"
-        reporter.export_solution_file(file_solution_name, a, run_time)
-        reporter.export_search_path_file(file_search_name, a)
+        if output_reporter is not None:
+            output_reporter.export_solution_file(file_solution_name, a, run_time)
+            output_reporter.export_search_path_file(file_search_name, a)
 
 
-def run_greedy_bfs(inputs: list, reporter: OutputReporter):
+def run_greedy_bfs(inputs: list, output_reporter: OutputReporter):
     """
     Function for Algorithm Greedy BFS in main with some format
     """
@@ -63,8 +65,9 @@ def run_greedy_bfs(inputs: list, reporter: OutputReporter):
         sol_count = idx + 1
         file_solution_name = "gbfs-h1-sol-" + str(sol_count) + ".txt"
         file_search_name = "gbfs-h1-search-" + str(sol_count) + ".txt"
-        reporter.export_solution_file(file_solution_name, gbfs, run_time)
-        reporter.export_search_path_file(file_search_name, gbfs)
+        if output_reporter is not None:
+            output_reporter.export_solution_file(file_solution_name, gbfs, run_time)
+            output_reporter.export_search_path_file(file_search_name, gbfs)
 
 
 if __name__ == "__main__":

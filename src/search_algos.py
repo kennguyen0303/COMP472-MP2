@@ -130,6 +130,8 @@ class GenericSearch:
                                 cost_g = self.function_g(curr_cost)
                                 cost_h = self.function_h(new_move[0])
                                 # curr_cost +1
+                                # new_move <state_string, fuel_update for
+                                # this move, message for search path>
                                 heapq.heappush(
                                     self.open_list,
                                     (
@@ -140,7 +142,7 @@ class GenericSearch:
                                         new_move[2],
                                         (cost_g, cost_h),
                                     ),
-                                )  # new_move <state_string, fuel_update for this move, message for search path>
+                                )
 
                     distance += 1
 
@@ -161,7 +163,7 @@ class UCS(GenericSearch):
         """
         return curr_cost + 1
 
-    def calculate_heuristic(self, state_str: str):
+    def calculate_heuristic(self, __state_str__: str):
         """'
         Calculate heruristic based on a string
         """
@@ -176,7 +178,7 @@ class GBFS(GenericSearch):
     def __init__(self, heuristic_function) -> None:
         super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
 
-    def calculate_g(self, curr_cost: int):
+    def calculate_g(self, __curr_cost__: int):
         """
         find the cost based on number of parents
         """
