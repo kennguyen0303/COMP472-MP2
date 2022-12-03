@@ -46,7 +46,7 @@ def run_algorithm_a(
     """
     for idx, input_str in enumerate(inputs):
         print("\n-------- NEW INPUT--------\n")
-        a = AlgoA(heuristic_function)
+        a = AlgoA(heuristic_function, heuristic_number)
         curr_time = datetime.now()
         a.search(input_str)
         run_time = (datetime.now() - curr_time).total_seconds()
@@ -76,7 +76,7 @@ def run_greedy_bfs(
     """
     for idx, input_str in enumerate(inputs):
         print("\n-------- NEW INPUT--------\n")
-        gbfs = GBFS(heuristic_function)
+        gbfs = GBFS(heuristic_function, heuristic_number)
         curr_time = datetime.now()
         gbfs.search(input_str)
         run_time = (datetime.now() - curr_time).total_seconds()

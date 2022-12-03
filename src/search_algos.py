@@ -12,7 +12,9 @@ class GenericSearch:
     Class for universal cost search
     """
 
-    def __init__(self, function_g, function_h) -> None:
+    def __init__(self, function_g, function_h, name="", heuristic_name="NA") -> None:
+        self.name = name
+        self.heuristic_name = heuristic_name
         self.function_g = function_g
         self.function_h = function_h
         self.search_path = []
@@ -29,7 +31,7 @@ class GenericSearch:
 
     def search(self, input_str: str):
         """
-        Universal Cost Search
+        Run search algo
         """
         if input_str.strip() == "":  # invalid input
             return
@@ -55,7 +57,6 @@ class GenericSearch:
         while len(self.open_list) > 0:
             # Stop conditions:
             if self.is_final_state_reached:
-                print("FOUND")
                 break
 
             next_state = heapq.heappop(self.open_list)
@@ -91,10 +92,10 @@ class GenericSearch:
                 if vehicle.name == "A":  # goal state reached
                     self.is_final_state_reached = True
                     self.final_state = extractor  # store for key search in closed_list
-                    extractor.print_curr_layout()
-                    print(len(self.closed_list))
-                    print("\n-------\n")
-                    print(extractor.get_fuels(only_consumed=True))
+                    # extractor.print_curr_layout()
+                    # print(len(self.closed_list))
+                    # print("\n-------\n")
+                    # print(extractor.get_fuels(only_consumed=True))
                     return
 
                 # remove the vehicle at exit
@@ -154,7 +155,7 @@ class UCS(GenericSearch):
 
     def __init__(self) -> None:
         super().__init__(
-            function_g=self.calculate_g, function_h=self.calculate_heuristic
+            function_g=self.calculate_g, function_h=self.calculate_heuristic, name="UCS"
         )
 
     def calculate_g(self, curr_cost: int):
@@ -176,9 +177,12 @@ class GBFS(GenericSearch):
     """
 
     def __init__(self, heuristic_function, heuristic_name: str) -> None:
-        self.name = "GBFS"
-        self.heuristic_name = "h" + heuristic_name
-        super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
+        super().__init__(
+            function_g=self.calculate_g,
+            function_h=heuristic_function,
+            name="GBFS",
+            heuristic_name="h" + heuristic_name,
+        )
 
     def calculate_g(self, __curr_cost__: int):
         """
@@ -193,9 +197,12 @@ class AlgoA(GenericSearch):
     """
 
     def __init__(self, heuristic_function, heuristic_name: str) -> None:
-        self.name = "A/A*"
-        self.heuristic_name = "h" + heuristic_name
-        super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
+        super().__init__(
+            function_g=self.calculate_g,
+            function_h=heuristic_function,
+            name="A/A*",
+            heuristic_name="h" + heuristic_name,
+        )
 
     def calculate_g(self, curr_cost: int):
         """
