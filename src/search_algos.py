@@ -175,7 +175,9 @@ class GBFS(GenericSearch):
     Greedy best first search algo
     """
 
-    def __init__(self, heuristic_function) -> None:
+    def __init__(self, heuristic_function, heuristic_name: str) -> None:
+        self.name = "GBFS"
+        self.heuristic_name = "h" + heuristic_name
         super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
 
     def calculate_g(self, __curr_cost__: int):
@@ -190,7 +192,9 @@ class AlgoA(GenericSearch):
     Algorithm A
     """
 
-    def __init__(self, heuristic_function) -> None:
+    def __init__(self, heuristic_function, heuristic_name: str) -> None:
+        self.name = "A/A*"
+        self.heuristic_name = "h" + heuristic_name
         super().__init__(function_g=self.calculate_g, function_h=heuristic_function)
 
     def calculate_g(self, curr_cost: int):
@@ -226,3 +230,39 @@ def calculate_heuristic_1(state_str: str):
 
         fast += 1
     return heuristic
+
+
+def calculate_heuristic_2(state_str: str):
+    """'
+    Calculate heruristic based on a string
+
+    Heuristic 2: Number of blocked positions
+    (position which is not . towards the exit)
+    """
+    # first, locate A on row 3
+    row_loc = 2
+    slow = SIZE * row_loc
+    fast = slow
+    end = slow + (SIZE - 1)
+    is_ambulance_found = False
+    heuristic = 0
+    while fast <= end:
+        if state_str[fast] == "A":
+            # goal: slow is the right-most cell of A
+            if not is_ambulance_found:
+                is_ambulance_found = True
+                slow = fast
+        elif is_ambulance_found and (state_str[fast] != "."):
+            heuristic += 1
+
+        fast += 1
+    return heuristic
+
+
+def calculate_heuristic_3(state_str: str):
+    """'
+    Calculate heruristic based on a string
+
+    Heuristic 3: Multiply heuristic 1 with a constant = 5
+    """
+    return calculate_heuristic_1(state_str) * 5

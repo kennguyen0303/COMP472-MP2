@@ -15,6 +15,7 @@ class OutputReporter:
 
     def __init__(self, root_dir: str) -> None:
         self.root_dir = root_dir
+        self.spead_sheet_df = DataFrame()
 
     def export_solution_file(self, file_name: str, search_algo: UCS, runtime: float):
         """
