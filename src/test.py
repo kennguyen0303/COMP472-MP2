@@ -3,6 +3,7 @@ Something
 """
 import random
 from input_parser import InputParser, StateExtractor
+from search_algos import calculate_heuristic_4
 
 
 def get_inputs_from_database(num_of_puzzles: int):
@@ -34,4 +35,11 @@ def get_inputs_from_database(num_of_puzzles: int):
 
 
 if __name__ == "__main__":
-    get_inputs_from_database(50)
+    # get_inputs_from_database(50)
+    INPUTS = [
+        "BBIJ....IJCC..IAAMGDDK.MGH.KL.GHFFL.",
+        "BBIJ....IJCCAAI..MGDDK.MGH.KL.GHFFL.",
+    ]
+    for input in INPUTS:
+        StateExtractor(input).print_curr_layout()
+        print(calculate_heuristic_4(input))

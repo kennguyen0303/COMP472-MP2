@@ -226,7 +226,7 @@ def calculate_heuristic_1(state_str: str):
     heuristic = 0
     while fast <= end:
         if state_str[fast] == "A":
-            # goal: slow is the right-most cell of A
+            # goal: slow is the first cell of A
             if not is_ambulance_found:
                 is_ambulance_found = True
                 slow = fast
@@ -255,7 +255,7 @@ def calculate_heuristic_2(state_str: str):
     heuristic = 0
     while fast <= end:
         if state_str[fast] == "A":
-            # goal: slow is the right-most cell of A
+            # goal: slow is the first cell of A
             if not is_ambulance_found:
                 is_ambulance_found = True
                 slow = fast
@@ -273,3 +273,40 @@ def calculate_heuristic_3(state_str: str):
     Heuristic 3: Multiply heuristic 1 with a constant = 5
     """
     return calculate_heuristic_1(state_str) * 5
+
+
+def calculate_heuristic_4(state_str: str):
+    """'
+    Calculate heruristic based on a string
+
+    Heuristic 4: Measure difference between the distance
+    from the ambulance (last cell) to the exit and
+    the number of available cells
+    """
+    row_loc = 2
+    slow = SIZE * row_loc
+    fast = slow
+    end = slow + (SIZE - 1)
+    is_ambulance_found = False
+    distance = 0
+    num_of_empty_spot = 0
+    while fast <= end:
+        if state_str[fast] == "A":  # first, locate A on row 3
+            # goal: slow is the last cell of A
+            if not is_ambulance_found:
+                is_ambulance_found = True
+
+            slow = fast
+        elif is_ambulance_found:  # calculate the distance
+            distance = end - slow
+            break
+
+        fast += 1
+
+    while fast <= end:
+        if state_str[fast] == ".":
+            num_of_empty_spot += 1
+
+        fast += 1
+
+    return distance - num_of_empty_spot

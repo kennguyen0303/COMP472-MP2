@@ -13,11 +13,17 @@ from search_algos import (
     calculate_heuristic_1,
     calculate_heuristic_2,
     calculate_heuristic_3,
+    calculate_heuristic_4,
 )
 from reporter import OutputReporter
 
 # GLOBAL
-heuristics = [calculate_heuristic_1, calculate_heuristic_2, calculate_heuristic_3]
+heuristics = [
+    calculate_heuristic_1,
+    calculate_heuristic_2,
+    calculate_heuristic_3,
+    calculate_heuristic_4,
+]
 reporter = OutputReporter(
     root_dir="/home/n_thekie/Desktop/school/comp 472/COMP472-MP2/outputs/"
 )
@@ -115,7 +121,7 @@ if __name__ == "__main__":
         }
     )
 
-    #print(result_df.to_string(index=False))
+    # print(result_df.to_string(index=False))
 
     # csv
     result_df.to_csv("test.csv", index=False)

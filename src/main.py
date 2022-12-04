@@ -10,6 +10,7 @@ from search_algos import (
     calculate_heuristic_1,
     calculate_heuristic_2,
     calculate_heuristic_3,
+    calculate_heuristic_4,
 )
 from reporter import OutputReporter
 
@@ -103,7 +104,12 @@ if __name__ == "__main__":
     reporter = OutputReporter(
         root_dir="/home/n_thekie/Desktop/school/comp 472/COMP472-MP2/outputs/"
     )
-    heuristics = [calculate_heuristic_1, calculate_heuristic_2, calculate_heuristic_3]
+    heuristics = [
+        calculate_heuristic_1,
+        calculate_heuristic_2,
+        calculate_heuristic_3,
+        calculate_heuristic_4,
+    ]
     run_ucs(INPUTS, reporter)
     for idx, heuristic in enumerate(heuristics):
         run_greedy_bfs(INPUTS, reporter, heuristic, str(idx + 1))
