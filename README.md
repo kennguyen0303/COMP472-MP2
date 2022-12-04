@@ -6,15 +6,28 @@ Github URL: https://github.com/kennguyen0303/COMP472-MP2
 (Optional step: Create a virtual environment: python3 -m venv venv)
 
 
-Install requirements.txt
+## Install dependencies:
+Step 1: cd <src/>
 
-Run <src/main.py> for running the search algorithms against the sample-input.txt file. The output will be exported in /outputs/ 
+Step 2: Command: python3 install -r requirements.txt
 
-Run <src/run_sample_puzzles.py> to execute all search algorithms on the 50 random puzzles. A <test.csv> file will be generated in /src/
+## Running the search algorithms against the sample-input.txt file
+Command: python3 src/main.py
 
-Running unit tests: 
+The output will be exported in /outputs/ 
 
-Step 1: Cd ~/COMP472-MP2
-Step 2: run: <python -m pytest tests/>
+## Run all search algorithms on the 50 random puzzles
+command: python3 src/run_sample_puzzles.py
+
+A <test.csv> file will be generated in /src/
+
+## Running unit tests: 
+
+### Step 1: 
+
+Cd ~/COMP472-MP2
+
+### Step 2: 
+run: <python -m pytest tests/>
 
 All tests should pass.
